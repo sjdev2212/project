@@ -1,35 +1,29 @@
 import express from "express";
-import Hotel from "../models/Hotel.js";
+import {
+    createHotel,
+    deleteHotel,
+    getHotel,
+    getHotels,
+    updateHotel,
+  } from "../controllers/hotel.js";
+import { verifyAdmin, verifyUser } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send("Hello from hotels");
-    });
+
+
+
 //Create
-router.post("/", async (req, res) => {
- const newHotel = new Hotel(req.body);
-    try {
-const savedHotel = await newHotel.save();
-res.status(200).json(savedHotel);
-    } catch (error) {   
-        res.status(500).json(error);
-    }
-})    
+router.post("/",verifyAdmin, createHotel);    
 //update
-router.put("/:id", async (req, res) => {
-    try {
-    const updateHotel = await Hotel.findByIdAndUpdate(req.params.id, {
-    $set: req.body,
-}, {new: true});
-res.status(200).json(updateHotel);
-    } catch (error) {
-        res.status(500).json(error);
-    }
-
-})
+router.put("/:id",verifyAdmin, updateHotel);
 //delete
+router.delete("/:id", verifyAdmin, deleteHotel);
 
+//getone
+router.get ("/:id",verifyUser, getHotel);
+//get all 
+router.get("/", verifyUser, getHotels); 
 
 
    
